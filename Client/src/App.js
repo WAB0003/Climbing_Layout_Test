@@ -8,18 +8,9 @@ function App() {
 
   const [allDots, setAllDots] = useState([])
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
-  
-  // const imageWidth = windowWidth * .7
-  const imageWidth = 900
-  
+  const imageWidth = windowWidth * .7
+  const dotDiameter = (imageWidth*.015)      //The size of each dot is relative to the image width.
 
-  // const handleClick = () => {
-  //   console.log("I was clicked")
-  // }
-
-  const displayDots = allDots.map((eachDot)=>{
-    return <MyDots key={allDots.indexOf(eachDot)} id={allDots.indexOf(eachDot)} xPosition={eachDot.xPosition} yPosition={eachDot.yPosition}/>
-  })
   
 
 
@@ -28,6 +19,8 @@ function App() {
   useEffect(()=>{
     const handleWindowResize = () => {
       setWindowWidth(window.innerWidth)
+      // setImageHeight(document.querySelector('#main_image').clientHeight)
+      
     }
     window.addEventListener('resize', handleWindowResize)
     return () => {
@@ -36,39 +29,30 @@ function App() {
   },[])
   
   
-  
   //! Add Dot Click 
   const addDotClick = (e) => {
-    // 900 is the width of an image
-    let x
-    if (windowWidth > imageWidth){
-      x = e.pageX - ((windowWidth-imageWidth)/2);
-    } else {
-      x = e.pageX
-    }
     
-    const y = e.pageY;
-    // e.target.title = "X is "+x+" and Y is "+y;
-    // console.log(x,y)
+    //When image is clicked, a dot will appear. Compute the height/width as a percentage relative to the image location
+    const imageHeight = document.querySelector('#main_image').clientHeight
+    const x = ((e.pageX - ((windowWidth-imageWidth)/2))-(dotDiameter/2))/imageWidth*100;
+    const y = (e.pageY-(dotDiameter/2))/imageHeight*100;
 
-    //The 8 subtracted from the position is because the height/width of the svg dog file is 16
     const newDotObj = {
-      xPosition:(x-8),
-      yPosition:(y-8)
+      xPosition:(x),
+      yPosition:(y)
     }
     setAllDots((prevDots)=>[...prevDots, newDotObj])
   }
 
-
+  const displayDots = allDots.map((eachDot)=>{
+    return <MyDots key={allDots.indexOf(eachDot)} id={allDots.indexOf(eachDot)} xPosition={eachDot.xPosition} yPosition={eachDot.yPosition} dotDiameter={dotDiameter}/>
+  })
+  
   return (
     <div className="App">
         <div className='main_image_wrapper' style={{width:imageWidth}}  >
-          <img src={layoutImg} alt="main_image" useMap='#imgMap' onClick = {addDotClick} />
+          <img src={layoutImg} id="main_image" alt="main_image" useMap='#imgMap' onClick = {addDotClick} />
           {displayDots}
-    
-          {/* <map name="imgMap">
-            <area onClick={handleClick} alt='test' shape='poly' coords='223, 245, 282, 217, 435, 236, 341, 403, 286, 423' ></area>
-          </map> */}
         </div>
     </div>
   );
